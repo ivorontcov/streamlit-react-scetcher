@@ -1,43 +1,51 @@
-import {
-  StreamlitComponentBase,
-  withStreamlitConnection,
-} from "streamlit-component-lib"
+import OCL from "openchemlib/minimal"
 import { StructureEditor } from "react-ocl/full"
-import React, { ReactNode } from "react"
+import { Streamlit } from "streamlit-component-lib"
+import { useRenderData } from "streamlit-component-lib-react-hooks"
+import React, { useState, useEffect } from "react"
 
-interface State {
-  smiles: string
-}
+/**
+ * This is a React-based component template with functional component and hooks.
+ */
+const ReactEditor: React.VFC = () => {
+  // "useRenderData" returns the renderData passed from Python.
+  const renderData = useRenderData()
 
-const molFileDefault = `
-Actelion Java MolfileCreator 1.0
+  const [smiles, setSmiles] = useState("")
+  const [molFile, setMolFile] = useState("")
 
-6  5  0  0  0  0  0  0  0  0999 V2000
-3.4641   -0.5000   -0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-2.5981   -0.0000   -0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-1.7321   -0.5000   -0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-1.7321   -1.5000   -0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
-0.8660   -0.0000   -0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
-0.0000   -0.5000   -0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-2  1  1  0  0  0  0
-3  2  1  0  0  0  0
-4  3  2  0  0  0  0
-5  3  1  0  0  0  0
-6  5  1  0  0  0  0
-M  END
-`
+  useEffect(() => {
+    const _smiles = renderData.args.smiles
 
-class ReactEditor extends StreamlitComponentBase<State> {
-  public state = { numClicks: 0, isFocused: false, smiles: "COCCOOOCO" }
+    if (_smiles) {
+      setSmiles(_smiles)
 
-  public render = (): ReactNode => {
-    return (
+      const _molFile = OCL.Molecule.fromSmiles(_smiles).toMolfileV3()
+      setMolFile(_molFile)
+
+      Streamlit.setComponentValue(_smiles)
+    }
+  }, [renderData.args.smiles])
+
+  // @HACK: check related thread on Github:
+  // https://github.com/zakodium-oss/react-ocl/issues/17#issuecomment-1250199318
+  const key = Math.random();
+
+  return (
+    <>
+      <p>
+        SMILES from Streamlit: <b>{smiles}</b>
+      </p>
       <StructureEditor
-        initialMolfile={molFileDefault}
-        onChange={function noRefCheck() {}}
+        key={key}
+        initialMolfile={molFile}
+        onChange={(e) => {
+          debugger
+        }}
         svgMenu
       />
-    )
-  }
+    </>
+  )
 }
-export default withStreamlitConnection(ReactEditor)
+
+export default ReactEditor

@@ -37,8 +37,8 @@ else:
     build_dir = os.path.join(parent_dir, "frontend/build")
     _component_func = components.declare_component("react_editor", path=build_dir)
 
-def react_editor(key=None):
-    component_value = _component_func(key=key)
+def react_editor(smiles, key=None):
+    component_value = _component_func(smiles=smiles, key=key, default="COCCOOOCO")
 
     return component_value
 
@@ -51,8 +51,8 @@ if not _RELEASE:
 
     st.subheader("React Test")
 
-    # smiles_input = st.text_input("Enter SMILES as string here", value="COCCOOOCO")
+    smiles_input = st.text_input("Enter SMILES as a string here", value="COCCOOOCO")
     # name_input = st.text_input("Enter a name", value="Streamlit")
-    svg_render = react_editor(key="structureEditor")
+    svg_render = react_editor(smiles=smiles_input, key="smiles")
     # num_clicks = my_component(name_input, key="foo")
     # st.markdown("You've clicked %s times!" % int(num_clicks))
