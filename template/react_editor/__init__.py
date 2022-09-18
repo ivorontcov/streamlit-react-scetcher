@@ -48,11 +48,10 @@ def react_editor(smiles, key=None):
 # app: `$ streamlit run my_component/__init__.py`
 if not _RELEASE:
     import streamlit as st
+    placeholder = st.empty()
+    placeholder.subheader("Molecule Sketcher (OpenChemLib)")
+    
+    smiles_input = placeholder.text_input("Enter SMILES as a string here", value="COCCOOOCO")
+    sketcher_smiles = react_editor(smiles=smiles_input, key="smiles")
 
-    st.subheader("React Test")
-
-    smiles_input = st.text_input("Enter SMILES as a string here", value="COCCOOOCO")
-    # name_input = st.text_input("Enter a name", value="Streamlit")
-    svg_render = react_editor(smiles=smiles_input, key="smiles")
-    # num_clicks = my_component(name_input, key="foo")
-    # st.markdown("You've clicked %s times!" % int(num_clicks))
+    st.markdown("SMILES from sketcher: %s" % str(sketcher_smiles))

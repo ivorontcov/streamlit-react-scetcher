@@ -33,14 +33,13 @@ const ReactEditor: React.VFC = () => {
 
   return (
     <>
-      <p>
-        SMILES from Streamlit: <b>{smiles}</b>
-      </p>
       <StructureEditor
         key={key}
         initialMolfile={molFile}
-        onChange={(e) => {
-          debugger
+        onChange={newMolFile => {
+          setMolFile(newMolFile);
+          const newSmiles = OCL.Molecule.fromMolfile(newMolFile).toSmiles();
+          Streamlit.setComponentValue(newSmiles)
         }}
         svgMenu
       />
